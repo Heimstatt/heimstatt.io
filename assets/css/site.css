@@ -46,7 +46,7 @@ a:focus-visible, .lang a:focus-visible { outline: 3px solid var(--clay); outline
 .contact a:focus-visible { outline-color: var(--paper); }
 
 .skip-link {
-  position: absolute; left: 16px; top: -100px; z-index: 10;
+  position: absolute; left: 16px; top: -100px; z-index: 20;
   background: var(--ink); color: var(--paper); padding: 8px 16px; border-radius: 8px; font-weight: 600;
 }
 .skip-link:focus { top: 16px; color: var(--paper); }
