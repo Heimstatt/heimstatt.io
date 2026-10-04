@@ -67,6 +67,12 @@ a:focus-visible, .lang a:focus-visible { outline: 3px solid var(--clay); outline
 .lang [aria-current] { background: var(--ink); color: var(--paper); }
 .lang a:hover { background: var(--stone); color: var(--ink); }
 
+#stack .card { background: var(--stone); }
+#stack .cards + h3 { margin-top: 24px; }
+.runs-on { list-style: none; padding: 0; display: grid; gap: 6px; }
+.runs-on li { padding-left: 16px; position: relative; }
+.runs-on li::before { content: "·"; position: absolute; left: 4px; color: var(--ink-soft); }
+
 /* Shared */
 .eyebrow { font-size: 14px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--bark); }
 .eyebrow--clay { color: var(--clay); }
