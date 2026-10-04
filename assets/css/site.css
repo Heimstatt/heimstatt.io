@@ -69,6 +69,7 @@ html { scroll-padding-top: 96px; }
 .lang a:hover { background: var(--stone); color: var(--ink); }
 
 #stack .card { background: var(--stone); }
+#stack .card p:last-child { margin-top: auto; }
 #stack .cards + h3 { margin-top: 24px; }
 .runs-on { list-style: none; padding: 0; display: grid; gap: 6px; }
 .runs-on li { padding-left: 16px; position: relative; }
