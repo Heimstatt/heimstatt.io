@@ -170,6 +170,11 @@ html { scroll-padding-top: 96px; }
 @media (max-width: 960px) {
   .resident-grid { grid-template-columns: minmax(0, 1fr); }
 }
+/* Header: below 780 px the five menu links would wrap; keep brand + language switch on one row (one-page site, skip link stays) */
+@media (max-width: 780px) {
+  .site-header .wrap { flex-wrap: nowrap; }
+  .nav ul { display: none; }
+}
 @media (max-width: 600px) {
   :root { --gutter: 16px; }
   body { font-size: 17px; }
@@ -182,9 +187,6 @@ html { scroll-padding-top: 96px; }
   .resident__figure { flex-basis: 120px; width: 120px; }
   .doc h1 { font-size: 32px; }
   .contact h2 { font-size: 28px; }
-  /* Header: brand and language switch on one row; in-page links hidden (one-page site, skip link stays) */
-  .site-header .wrap { flex-wrap: nowrap; }
-  .nav ul { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
