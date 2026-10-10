@@ -167,6 +167,17 @@ html { scroll-padding-top: 96px; }
 .doc ul { padding-left: 20px; }
 .doc-foot { padding-top: 16px; border-top: 1px solid var(--line); font-size: 15px; color: var(--ink-soft); }
 
+/* Blog (HEIMS-123) */
+.doc code { font-size: 0.9em; padding: 1px 6px; border-radius: 6px; background: var(--stone); overflow-wrap: anywhere; }
+.doc blockquote { margin: 0; padding: 4px 0 4px 20px; border-left: 3px solid var(--accent-soft); color: var(--ink-soft); }
+.doc table { width: 100%; border-collapse: collapse; font-size: 16px; }
+.doc th, .doc td { text-align: left; padding: 8px 12px 8px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+.doc td:last-child, .doc th:last-child { text-align: right; padding-right: 0; }
+.post-list { list-style: none; padding-left: 0 !important; display: flex; flex-direction: column; gap: 32px; }
+.post-list li { display: flex; flex-direction: column; gap: 6px; padding-bottom: 28px; border-bottom: 1px solid var(--line); }
+.post-list h2 a { color: inherit; text-decoration: none; }
+.post-list h2 a:hover { color: var(--clay); text-decoration: underline; }
+
 /* Small screens (checked at 390 px) */
 @media (max-width: 960px) {
   .resident-grid { grid-template-columns: minmax(0, 1fr); }
