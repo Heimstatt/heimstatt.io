@@ -58,6 +58,8 @@ a:focus-visible, .lang a:focus-visible { outline: 3px solid var(--clay); outline
 html { scroll-padding-top: 96px; }
 .site-header .wrap { padding-top: 20px; padding-bottom: 20px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; }
 .brand { font-family: var(--font-display); font-weight: 700; font-size: 22px; letter-spacing: 0.02em; color: var(--ink); text-decoration: none; }
+.brand { display: inline-flex; align-items: center; gap: 10px; }
+.brand__mark { width: 28px; height: 28px; flex: none; display: block; }
 .brand:hover { color: var(--ink); }
 .nav { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 24px; font-size: 16px; }
 .nav ul { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 24px; }
