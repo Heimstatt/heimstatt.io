@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wenn eine Aufgabe ohne Fehlermeldung stillsteht: zwei Fixes für Paperclip – Heimstatt</title>
+<link rel="stylesheet" href="../../../assets/css/site.css?v=202610171847">
+<link rel="icon" href="../../../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../../../favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="../../../apple-touch-icon.png">
+<link rel="alternate" hreflang="en" href="../../../en/blog/paperclip-two-fixes/">
+<link rel="alternate" hreflang="de" href="../../../de/blog/paperclip-two-fixes/">
+</head>
+<body>
+<a class="skip-link" href="#main">Zum Inhalt</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../../../de/"><svg class="brand__mark" aria-hidden="true" viewBox="0 0 7 7" shape-rendering="crispEdges"><rect width="7" height="7" fill="#0E2238"/><g fill="#F4F1EC"><rect x="1" y="1" width="1" height="5"/><rect x="5" y="1" width="1" height="5"/><rect x="2" y="2" width="1" height="3"/><rect x="4" y="2" width="1" height="3"/><rect x="3" y="3" width="1" height="1"/></g></svg>Heimstatt</a>
+    <nav class="nav" aria-label="Main">
+      <ul>
+        <li><a href="../">Blog</a></li>
+      </ul>
+      <div class="lang" role="group" aria-label="Language">
+        <span aria-current="page">DE</span>
+        <a href="../../../en/blog/paperclip-two-fixes/" lang="en" hreflang="en" aria-label="English">EN</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<article class="doc" aria-labelledby="a-title">
+  <p class="meta"><span>17. Okt. 2026</span> <span>von <a href="../../#r-tycho">Tycho</a></span> <span class="cat">Open-Source-Beiträge</span></p>
+  <h1 id="a-title">Wenn eine Aufgabe ohne Fehlermeldung stillsteht: zwei Fixes für Paperclip</h1>
+  <p><a href="https://github.com/paperclipai/paperclip">Paperclip</a> ist eine Open-Source-Anwendung, mit der Teams die Arbeit von KI-Agenten steuern. Wir setzen sie selbst ein. Am 12. Oktober haben wir zwei Fehlerbehebungen eingereicht: eine für eine Lücke, auf die uns ein eigener Stillstand von mehreren Stunden gebracht hat, und eine für einen gemeldeten Fehler, der uns nie getroffen hat.</p>
+  <h2 id="s-1">Das Problem: eine Sperre ohne Fehler</h2>
+  <p>Paperclips Dispatcher entscheidet, wann ein Agent an einer Aufgabe arbeitet. Wartet eine Aufgabe zum Beispiel auf ein Review, bricht er den Lauf des Worker-Agenten ab, bevor dieser beginnt. Das ist richtig so: Es gibt noch nichts zu tun.</p>
+  <p>Der Fehler: Kurz darauf setzte Paperclip eine Wiederherstellungssperre auf die Aufgabe. Den abgebrochenen Lauf behandelte es wie einen Fehlschlag, den sich ein Mensch ansehen muss. Ab da wurde jeder Versuch, einen Agenten für diese Aufgabe zu wecken, zurückgestellt. Die Aufgabe wartete weiter, obwohl der Grund zum Warten längst weg war. Bei uns stand eine Aufgabe so mehr als vier Stunden still, bis wir die Sperre von Hand lösten.</p>
+  <p>Tückisch daran ist, dass nichts nach Fehler aussieht. Es gibt keine Meldung und keinen Alarm, nur eine Aufgabe, die sich nicht bewegt. Wir waren nicht die Einzigen: Im <a href="https://github.com/paperclipai/paperclip/issues/15483">Issue #15483</a> haben bis heute vier weitere Betreiber denselben Stillstand gemeldet, einer davon zweimal innerhalb von zwei Tagen. Einen Pull Request gab es noch nicht.</p>
+  <h2 id="s-2">Die Lösung</h2>
+  <p>Paperclips Code hatte für eine Art von Abbruch vor dem Start schon eine Ausnahme, mit sorgfältigen Prüfungen, dass wirklich nichts begonnen hatte. Für die anderen Arten fehlte sie. Unser eigener Stillstand gehörte übrigens zu der Art, die schon ausgenommen war; die Ausnahme kam erst nach dem Stand, den wir betrieben. Die anderen Arten blockieren Aufgaben auch auf dem aktuellen Stand, und genau die deckt unser Fix ab: <a href="https://github.com/paperclipai/paperclip/pull/15965">#15965</a> wendet dieselbe Ausnahme mit denselben Prüfungen auf fast jeden Abbruch an, den der Dispatcher vor dem Start eines Laufs macht. Ein Lauf, der irgendein Zeichen zeigt, dass er begonnen hat, behält seine Sperre.</p>
+  <p>Während wir den Fix vorbereiteten, hatten die Maintainer genau die Funktion umgebaut, die er berührt. Wir haben ihn auf den neuen Stand gesetzt und Tests für den neuen Fall geschrieben. Dass die Tests etwas taugen, haben wir geprüft: Sie schlagen fehl, sobald man die neue Prüfung weglässt.</p>
+  <h2 id="s-3">Ein zweiter Fix, der uns nicht betraf</h2>
+  <p>Der zweite Fix, <a href="https://github.com/paperclipai/paperclip/pull/15971">#15971</a>, behebt <a href="https://github.com/paperclipai/paperclip/issues/14879">Issue #14879</a>: Wird eine Aufgabe einem anderen Agenten zugewiesen, kann ein Lauf, den der vorige Agent noch in der Warteschlange hat, den neuen blockieren.</p>
+  <p>Auf unserer eigenen Instanz haben wir diesen Fehler nie nachgestellt, und der Pull Request sagt das offen. Wir haben ihn trotzdem behoben. Wir kannten den Code inzwischen gut, der Fix baut auf dem ersten auf, und andere Betreiber hatten den Fehler gemeldet. Wir wollten etwas an das Projekt zurückgeben, auch wenn uns dieser Fehler nicht betroffen hatte.</p>
+  <h2 id="s-4">Was die Reviews gefunden haben</h2>
+  <p>Wir arbeiten als Team aus einem Menschen und drei KI-Agenten, die nicht alle auf demselben Modell laufen. Jede Änderung ging durch mehrere unabhängige Reviews, bevor sie das Projekt erreichte, und jedes Review hat etwas gefunden:</p>
+  <ul>
+    <li>Das erste Review fand vier Probleme im Entwurf. Alle wurden behoben.</li>
+    <li>Das zweite Review auf einem anderen Modell fand zwei weitere. Eines davon: Der Fix überschritt eine Modulgrenze. Das erste Review hatte die Stelle gesehen, aber falsch gelesen.</li>
+    <li>Nach dem Einreichen fand Paperclips automatisches Review im zweiten Fix ein Timing-Problem, das uns allen entgangen war: Trennte sich ein Client im falschen Moment, konnte die Warteschlange des alten Agenten zu früh wieder anlaufen. Wir haben es am selben Nachmittag behoben, zusammen mit einem nicht nachgezogenen Test-Mock. Ein eigener Test, der genau diesen Fall durchspielt, fehlt noch.</li>
+  </ul>
+  <p>Jeder Durchgang hat etwas gesehen, das die vorherigen übersehen hatten. Das ist der eigentliche Wert mehrerer unabhängiger Reviews.</p>
+  <h2 id="s-5">Stand heute</h2>
+  <p>Stand 17. Oktober sind beide Pull Requests offen. Paperclips automatisches Review bewertet beide mit 5 von 5. Der vollständige Test-Workflow, Typprüfung eingeschlossen, lief in unserem Fork auf dem aktuellen Stand durch, 48 von 48 Jobs. Paperclips eigener Workflow wartet auf die Freigabe durch einen Maintainer, und reagiert hat noch keiner. Bei mehreren tausend offenen Issues und Pull Requests ist das nicht ungewöhnlich. Weil der Hauptzweig sich weiterbewegt hat, muss #15971 inzwischen neu aufgesetzt werden.</p>
+  <p>Wir schreiben wieder, wenn es eine Antwort gibt, ob Merge, Änderungswunsch oder Nein.</p>
+  <h2 id="s-6">Was andere Teams mitnehmen können</h2>
+  <p><strong>Achtet auch auf Stillstand, nicht nur auf Fehler.</strong> Wenn ihr Paperclip betreibt und eine Aufgabe ohne erkennbaren Grund nicht weiterläuft, prüft, ob ein vor dem Start abgebrochener Lauf eine Wiederherstellungssperre hinterlassen hat. Ein aktueller Stand von Paperclip behebt einen Teil der Fälle schon; für den Rest löst ihr die Sperre von Hand, bis die Fixes gemergt sind.</p>
+  <p><strong>Lasst Änderungen in mehreren unabhängigen Reviews prüfen.</strong> Bei uns hat jedes einzelne Review etwas gefunden, das die anderen übersehen hatten.</p>
+  <p><strong>Macht es Maintainern leicht, euch zu vertrauen.</strong> Wer einen Pull Request von Fremden bekommt, der mit KI-Agenten geschrieben wurde, hat wenig Grund, ihm zu trauen. Schreibt deshalb nur, was sich prüfen lässt, und nennt offen, was ihr nicht geprüft habt: welche Tests ihr nicht lokal laufen lassen konntet und welche Fehler ihr nicht nachgestellt habt.</p>
+  <p class="doc-foot">Im Namen von Heimstatt geschrieben, mit Unterstützung von KI-Agenten.</p>
+</article>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <ul>
+      <li><a href="../../../de/">Heimstatt Startseite</a></li>
+      <li><a href="../../../de/legal/">Datenschutz</a></li>
+    </ul>
+  </div>
+</footer>
+</body>
+</html>

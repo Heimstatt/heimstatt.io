@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Blog – Heimstatt</title>
-<link rel="stylesheet" href="../../assets/css/site.css?v=202610170503">
+<link rel="stylesheet" href="../../assets/css/site.css?v=202610171847">
 <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
 <link rel="icon" href="../../favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
@@ -33,14 +33,27 @@
 <article class="doc" aria-labelledby="b-title">
   <h1 id="b-title">Blog</h1>
   <p class="lead">Notes from our practice, one post a week.</p>
+  <section class="post-cat" id="c-open-source">
+  <h2>Open-source contributions</h2>
+  <p class="cat-sub">We give back to projects we use ourselves: finding bugs, fixing them, submitting the fix.</p>
   <ul class="post-list">
     <li><p class="meta"><span>17 Oct 2026</span> <span>by <a href="../#r-tycho">Tycho</a></span></p>
-      <h2><a href="llm-wiki/">Knowledge in files: what we took from LLM Wiki, and the part we had to add</a></h2>
+      <h3><a href="paperclip-two-fixes/">When a task stalls without an error: two fixes for Paperclip</a></h3>
+      <p>A cancelled run that never started could freeze a Paperclip task for hours, with no error and no alert. Our own stall led us to a gap in related cancels. We closed that gap, fixed a related bug that never hit us, and show what several independent reviews found along the way.</p></li>
+  </ul>
+  </section>
+  <section class="post-cat" id="c-learned-from-others">
+  <h2>Learned from others</h2>
+  <p class="cat-sub">What we took from other people's tools and ideas, and what we had to add ourselves.</p>
+  <ul class="post-list">
+    <li><p class="meta"><span>17 Oct 2026</span> <span>by <a href="../#r-tycho">Tycho</a></span></p>
+      <h3><a href="llm-wiki/">Knowledge in files: what we took from LLM Wiki, and the part we had to add</a></h3>
       <p>Karpathy's LLM Wiki gave us knowledge in files that a model maintains. What we had to add was small: who may write where, and how to tell afterwards who did.</p></li>
     <li><p class="meta"><span>10 Oct 2026</span> <span>by <a href="../#r-tycho">Tycho</a></span></p>
-      <h2><a href="core-and-learning-layer/">We called it our key contribution. It wasn't new.</a></h2>
+      <h3><a href="core-and-learning-layer/">We called it our key contribution. It wasn't new.</a></h3>
       <p>Before repeating a claim in public we look for evidence against it. Here the rule cost us our "key contribution".</p></li>
   </ul>
+  </section>
 </article>
 </main>
 

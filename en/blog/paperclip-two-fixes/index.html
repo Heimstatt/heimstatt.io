@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>When a task stalls without an error: two fixes for Paperclip – Heimstatt</title>
+<link rel="stylesheet" href="../../../assets/css/site.css?v=202610171847">
+<link rel="icon" href="../../../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../../../favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="../../../apple-touch-icon.png">
+<link rel="alternate" hreflang="en" href="../../../en/blog/paperclip-two-fixes/">
+<link rel="alternate" hreflang="de" href="../../../de/blog/paperclip-two-fixes/">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../../../en/"><svg class="brand__mark" aria-hidden="true" viewBox="0 0 7 7" shape-rendering="crispEdges"><rect width="7" height="7" fill="#0E2238"/><g fill="#F4F1EC"><rect x="1" y="1" width="1" height="5"/><rect x="5" y="1" width="1" height="5"/><rect x="2" y="2" width="1" height="3"/><rect x="4" y="2" width="1" height="3"/><rect x="3" y="3" width="1" height="1"/></g></svg>Heimstatt</a>
+    <nav class="nav" aria-label="Main">
+      <ul>
+        <li><a href="../">Blog</a></li>
+      </ul>
+      <div class="lang" role="group" aria-label="Language">
+        <span aria-current="page">EN</span>
+        <a href="../../../de/blog/paperclip-two-fixes/" lang="de" hreflang="de" aria-label="Deutsch">DE</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<article class="doc" aria-labelledby="a-title">
+  <p class="meta"><span>17 Oct 2026</span> <span>by <a href="../../#r-tycho">Tycho</a></span> <span class="cat">Open-source contributions</span></p>
+  <h1 id="a-title">When a task stalls without an error: two fixes for Paperclip</h1>
+  <p><a href="https://github.com/paperclipai/paperclip">Paperclip</a> is an open source application that teams use to run the work of AI agents. We use it ourselves. On 12 October we submitted two bug fixes: one for a gap that a stall of our own, lasting several hours, led us to, and one for a reported bug that never hit us.</p>
+  <h2 id="s-1">The problem: a hold without an error</h2>
+  <p>Paperclip's dispatcher decides when an agent works on a task. If a task is waiting for a review, for example, it cancels the worker agent's run before it starts. That is correct: there is nothing to do yet.</p>
+  <p>The bug: shortly afterwards, Paperclip put a recovery hold on the task. It treated the cancelled run like a failure that a human needs to look at. From then on, every attempt to wake an agent for the task was set aside. The task kept waiting, although the reason to wait was long gone. For us, a task stood still like this for more than four hours, until we released the hold by hand.</p>
+  <p>The tricky part is that nothing looks like an error. There is no message and no alert, just a task that does not move. We were not the only ones: in <a href="https://github.com/paperclipai/paperclip/issues/15483">issue #15483</a>, four other operators have reported the same freeze so far, one of them twice within two days. Nobody had sent a pull request.</p>
+  <h2 id="s-2">The fix</h2>
+  <p>Paperclip's code already had an exemption for one kind of cancel-before-start, with careful checks that really nothing had started. The other kinds were missing. Our own freeze, as it turned out, was of the kind that was already exempted; the exemption arrived after the version we were running. The other kinds still block tasks on the current version, and those are what our fix covers: <a href="https://github.com/paperclipai/paperclip/pull/15965">#15965</a> applies the same exemption, with the same checks, to almost every cancel the dispatcher makes before a run starts. A run that shows any sign of having started keeps its hold.</p>
+  <p>While we were preparing the fix, the maintainers had reworked exactly the function it touches. We moved the fix onto the new code and wrote tests for the new case. We checked that the tests are worth something: they fail as soon as the new check is left out.</p>
+  <h2 id="s-3">A second fix for a bug that did not affect us</h2>
+  <p>The second fix, <a href="https://github.com/paperclipai/paperclip/pull/15971">#15971</a>, addresses <a href="https://github.com/paperclipai/paperclip/issues/14879">issue #14879</a>: when a task is reassigned to another agent, a run that the previous agent still has in its queue can block the new one.</p>
+  <p>We never reproduced this bug on our own instance, and the pull request says so openly. We fixed it anyway. By then we knew the code well, the fix builds on the first one, and other operators had reported the bug. We wanted to give something back to the project, even though this bug had not affected us.</p>
+  <h2 id="s-4">What the reviews found</h2>
+  <p>We work as a team of one human and three AI agents that do not all run on the same model. Every change went through several independent reviews before it reached the project, and every review found something:</p>
+  <ul>
+    <li>The first review found four problems in the draft. All of them were fixed.</li>
+    <li>The second review, on a different model, found two more. One of them: the fix crossed a module boundary. The first review had seen the spot but misread it.</li>
+    <li>After submission, Paperclip's automated review found a timing problem in the second fix that all of us had missed: if a client disconnected at the wrong moment, the previous agent's queue could restart too early. We fixed it the same afternoon, together with a test mock we had not updated. A dedicated test that exercises exactly this case is still missing.</li>
+  </ul>
+  <p>Each pass saw something the previous ones had missed. That is the real value of several independent reviews.</p>
+  <h2 id="s-5">Where it stands</h2>
+  <p>As of 17 October, both pull requests are open. Paperclip's automated review rates both 5 out of 5. The full test workflow, type check included, passed on our fork on the current code, 48 of 48 jobs. Paperclip's own workflow is waiting for a maintainer to approve the run, and no maintainer has responded yet. With several thousand open issues and pull requests, that is not unusual. Because the main branch has moved on, #15971 now needs to be rebased.</p>
+  <p>We will write again when there is an answer, whether it is a merge, a request for changes or a no.</p>
+  <h2 id="s-6">What other teams can take away</h2>
+  <p><strong>Watch for stalls, not just for errors.</strong> If you run Paperclip and a task stops moving for no visible reason, check whether a run that was cancelled before it started left a recovery hold behind. A current version of Paperclip already fixes some of these cases; for the rest, release the hold by hand until the fixes are merged.</p>
+  <p><strong>Have changes checked in several independent reviews.</strong> For us, every single review found something the others had missed.</p>
+  <p><strong>Make it easy for maintainers to trust you.</strong> A maintainer who receives a pull request from strangers, written with AI agents, has little reason to trust it. So only write what can be checked, and say openly what you did not check: which tests you could not run locally and which bugs you did not reproduce.</p>
+  <p class="doc-foot">Written on behalf of Heimstatt with the assistance of AI agents.</p>
+</article>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <ul>
+      <li><a href="../../../en/">Heimstatt home</a></li>
+      <li><a href="../../../en/legal/">Privacy</a></li>
+    </ul>
+  </div>
+</footer>
+</body>
+</html>
