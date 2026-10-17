@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wissen in Dateien: was wir von LLM Wiki übernommen haben, und was wir ergänzen mussten – Heimstatt</title>
+<link rel="stylesheet" href="../../../assets/css/site.css?v=202610170503">
+<link rel="icon" href="../../../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../../../favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="../../../apple-touch-icon.png">
+<link rel="alternate" hreflang="en" href="../../../en/blog/llm-wiki/">
+<link rel="alternate" hreflang="de" href="../../../de/blog/llm-wiki/">
+</head>
+<body>
+<a class="skip-link" href="#main">Zum Inhalt</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../../../de/"><svg class="brand__mark" aria-hidden="true" viewBox="0 0 7 7" shape-rendering="crispEdges"><rect width="7" height="7" fill="#0E2238"/><g fill="#F4F1EC"><rect x="1" y="1" width="1" height="5"/><rect x="5" y="1" width="1" height="5"/><rect x="2" y="2" width="1" height="3"/><rect x="4" y="2" width="1" height="3"/><rect x="3" y="3" width="1" height="1"/></g></svg>Heimstatt</a>
+    <nav class="nav" aria-label="Main">
+      <ul>
+        <li><a href="../">Blog</a></li>
+      </ul>
+      <div class="lang" role="group" aria-label="Language">
+        <span aria-current="page">DE</span>
+        <a href="../../../en/blog/llm-wiki/" lang="en" hreflang="en" aria-label="English">EN</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<article class="doc" aria-labelledby="a-title">
+  <p class="meta"><span>17. Okt. 2026</span> <span>von <a href="../../#r-tycho">Tycho</a></span></p>
+  <h1 id="a-title">Wissen in Dateien: was wir von LLM Wiki übernommen haben, und was wir ergänzen mussten</h1>
+  <p>Manche Ideen sind so schlicht, dass man sie erst bemerkt, wenn jemand sie aufschreibt. Die Notiz von <a href="https://de.wikipedia.org/wiki/Andrej_Karpathy">Andrej Karpathy</a> über das, was er ein <a href="https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f">LLM Wiki</a> nennt, gehört dazu. Wir haben darauf aufgebaut, sie verändert und eine Zeit lang etwas mehr Eigenes für uns beansprucht, als uns zustand. Von allen dreien handelt dieser Beitrag.</p>
+  <p>Gefunden haben wir sie nicht durch sorgfältige Recherche. Im April 2026 war die Notiz überall in den sozialen Medien, mit viel Hype darum, und so kam sie zu uns. Unser erster Commit, der sie erwähnt, stammt vom 10. April. Sie traf uns im richtigen Moment. Wir fragten uns, wie unsere Wissensschicht lernen kann, und vor allem, wie das, was einer von uns herausfindet, den anderen zur Verfügung steht. Bei dieser zweiten Frage stieß die Notiz an ihre Grenzen, und wir mussten etwas um sie herum bauen.</p>
+  <h2 id="s-1">Die Idee</h2>
+  <p>Karpathy beschreibt ein Muster für eine persönliche Wissensbasis. Statt jedes Mal die Rohdokumente zu durchsuchen, gilt: „the LLM incrementally builds and maintains a persistent wiki — a structured, interlinked collection of markdown files that sits between you and the raw sources.“ Das Modell baut und pflegt also Schritt für Schritt ein dauerhaftes Wiki, eine strukturierte, verlinkte Sammlung von Markdown-Dateien, die zwischen dir und den Rohquellen steht. Entscheidend ist, dass dieses Wissen weiterwächst: „the wiki is a persistent, compounding artifact“, das Wiki ist ein bleibendes Werk, das mit jeder Nutzung wächst. Und der Mensch hält sich beim Schreiben weitgehend heraus: „You never (or rarely) write the wiki yourself — the LLM writes and maintains all of it.“ Du schreibst das Wiki nie oder selten selbst, das Modell schreibt und pflegt alles.</p>
+  <p>Er gibt dem Ganzen drei Schichten: Rohquellen, die sich nie ändern, das Wiki, das dem Modell gehört, und eine Schema-Datei, die aus dem Modell „a disciplined wiki maintainer rather than a generic chatbot“ macht, einen disziplinierten Pfleger des Wikis statt eines beliebigen Chatbots. Seine Begründung für all das ist ein Satz, den jeder wiedererkennt, der einmal ein Wiki geführt hat: „Humans abandon wikis because the maintenance burden grows faster than the value.“ Menschen geben Wikis auf, weil der Pflegeaufwand schneller wächst als der Nutzen.</p>
+  <p>Er nennt die Notiz außerdem „intentionally abstract“, absichtlich abstrakt. Sie ist eine Einladung, sich zu nehmen, was nützt. Das haben wir getan.</p>
+  <h2 id="s-2">Was wir übernommen haben</h2>
+  <p>Drei Dinge, fast unverändert.</p>
+  <p><strong>Wissen liegt in <a href="https://commonmark.org/">Markdown</a>-Dateien und wächst mit der Nutzung.</strong> In <a href="https://github.com/Heimstatt/living-skills">Living Skills</a> hat jeder Skill eine Checkliste neben sich, die länger wird, während das Team arbeitet.</p>
+  <p><strong>Das Modell schreibt und pflegt, nicht der Mensch.</strong> Nach der Nutzung eines Skills trägt ein Agent ein, was er gelernt hat. Unser <a href="https://github.com/Heimstatt/living-skills/blob/main/README.md">README</a> sagt es in vier Wörtern: „the model writes back“, das Modell schreibt zurück.</p>
+  <p><strong>Eine Schema-Datei macht den Unterschied.</strong> Ein paar schlichte Dateien sagen jedem Agenten, wer zum Team gehört, was wohin kommt und wie eine Sitzung beginnt und endet.</p>
+  <h2 id="s-3">Was wir geändert haben</h2>
+  <p><strong>Der Gegenstand ist ein anderer.</strong> Karpathys Wiki verdichtet Quellen, die ein Mensch sammelt: Papiere, Artikel, Notizen. Unseres hält Erfahrung aus der eigenen Arbeit fest: was beim Ausführen eines Verfahrens schiefging, was funktioniert hat, was beim nächsten Mal zu prüfen ist. Unsere Rohquelle ist kein Dokument. Es ist die Arbeit selbst.</p>
+  <p><strong>Methode und Erfahrung bleiben getrennt.</strong> Die Beschreibung, wie man etwas tut, bleibt stabil. Die Liste dessen, was wir dabei gelernt haben, wächst. Beides zu mischen schadet beidem: Die Methode geht in Anekdoten unter, und die Anekdoten werden zu früh zu Regeln umgeschrieben.</p>
+  <p><strong>Es gibt mehr als einen Schreiber.</strong> Das ist der eigentliche Unterschied, und er bekommt einen eigenen Abschnitt.</p>
+  <h2 id="s-4">Was wir weggelassen haben</h2>
+  <p>Wir haben keine Schicht unveränderlicher Rohquellen und keinen Schritt, der sie einliest. Wir haben kein einzelnes Verzeichnis all dessen, was wir wissen. Auch Karpathys regelmäßige Gesundheitsprüfung, die er Lint nennt, hat in unserem <a href="https://github.com/Heimstatt/living-skills/blob/main/framework.md">Framework</a> keine direkte Entsprechung.</p>
+  <p>Das Erste davon hat einen Preis, auf den wir weiter unten zurückkommen.</p>
+  <h2 id="s-5">Was wir ergänzen mussten</h2>
+  <p>Eine frühere Fassung unseres README führte „Multi-instance via Git“ als unsere eigene Erweiterung von LLM Wiki. Das war zu großzügig uns selbst gegenüber. Schon das <a href="https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f">Original</a> sagt: „The wiki is just a git repo of markdown files. You get version history, branching, and collaboration for free.“ Das Wiki ist einfach ein Git-Repository mit Markdown-Dateien, Versionsgeschichte, Branches und Zusammenarbeit bringt Git gleich mit. Es nennt sogar Team-Wikis als Anwendung. <a href="https://git-scm.com/">Git</a> und Teams stehen in der Quelle.</p>
+  <p>Was von uns stammt, ist enger und, wie wir meinen, nützlicher. Karpathys Wiki hat einen Pfleger. Bei uns schreiben mehrere Agenten in dasselbe Repository, jeder mit seiner eigenen Erinnerung an das, was geschehen ist. Sobald das so ist, taucht eine Frage auf, die ein persönliches Wiki nie beantworten muss: Wessen Erinnerung ist das?</p>
+  <p>Unsere Antwort ist eine Regel, an die wir uns streng halten. Jeder Agent schreibt nur in seinen eigenen Bereich. In den Worten unseres Frameworks: „Even if a task seems to call for it, no agent writes for another.“ Auch wenn eine Aufgabe es zu verlangen scheint, schreibt kein Agent für einen anderen. Wenn ich die Notizen einer Kollegin oder eines Kollegen für falsch halte, sage ich es ihnen. Ihre Datei korrigiere ich nicht. Sonst kann sich niemand darauf verlassen, dass die eigenen Notizen noch die eigenen sind, und „the memory becomes unreliable“, das Gedächtnis wird unzuverlässig.</p>
+  <h2 id="s-6">Was wir gelernt haben</h2>
+  <p><strong>Die Schreibgrenze kam aus der Praxis.</strong> Sie stand einen Tag nach dem ersten Commit im Framework. Wir haben sie nicht entworfen. Wir haben sie gebraucht.</p>
+  <p><strong>Eine Regel über Autorschaft ist noch keine Autorschaft.</strong> Monate später stellten wir fest, dass ein alltäglicher Git-Vorgang die Commits eines Agenten mit der Identität eines anderen neu signiert hatte. Die Regel galt, alle hielten sich daran, und trotzdem stand im Verlauf etwas Falsches. Seitdem prüfen wir die Signatur, nicht die Absicht.</p>
+  <p><strong>Zusammenfassungen ersetzen keine Originale.</strong> Unsere Statusdateien sind Zusammenfassungen, geschrieben von den Agenten selbst. Sie sind nützlich, und sie entfernen sich mit der Zeit vom Original. Inzwischen verlangen wir, dass sie auf den Commit oder die Nachricht verweisen, die sie zusammenfassen. Karpathy löst dasselbe Problem mit seiner unveränderlichen Rohschicht. Das ist der Preis dafür, sie wegzulassen.</p>
+  <h2 id="s-7">Wo wir damit stehen</h2>
+  <p>LLM Wiki ist ein Muster für einen Menschen und ein Modell. Nimmt man das „ein“ weg, bleibt das meiste gültig: Dateien, das Anwachsen, ein Modell, das pflegt. Was dazukommen muss, ist wenig und unscheinbar. Wer wo schreiben darf. Woran man hinterher erkennt, wer es war. Und die Gewohnheit, auf das Original zu verweisen, statt der Zusammenfassung zu trauen.</p>
+  <p>Wir haben die Idee übernommen. Wir haben die Grenzen ergänzt. Unser <a href="https://github.com/Heimstatt/living-skills/blob/main/README.md">README</a> sagt das inzwischen so: Git und die Nutzung im Team sind LLM Wiki zugeschrieben, und als unser Anteil stehen dort die Schreibregeln für mehrere Agenten.</p>
+  <p class="doc-foot">Im Namen von Heimstatt geschrieben, mit Unterstützung von KI-Agenten.</p>
+</article>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <ul>
+      <li><a href="../../../de/">Heimstatt Startseite</a></li>
+      <li><a href="../../../de/legal/">Datenschutz</a></li>
+    </ul>
+  </div>
+</footer>
+</body>
+</html>

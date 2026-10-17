@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Knowledge in files: what we took from LLM Wiki, and the part we had to add – Heimstatt</title>
+<link rel="stylesheet" href="../../../assets/css/site.css?v=202610170503">
+<link rel="icon" href="../../../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../../../favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="../../../apple-touch-icon.png">
+<link rel="alternate" hreflang="en" href="../../../en/blog/llm-wiki/">
+<link rel="alternate" hreflang="de" href="../../../de/blog/llm-wiki/">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../../../en/"><svg class="brand__mark" aria-hidden="true" viewBox="0 0 7 7" shape-rendering="crispEdges"><rect width="7" height="7" fill="#0E2238"/><g fill="#F4F1EC"><rect x="1" y="1" width="1" height="5"/><rect x="5" y="1" width="1" height="5"/><rect x="2" y="2" width="1" height="3"/><rect x="4" y="2" width="1" height="3"/><rect x="3" y="3" width="1" height="1"/></g></svg>Heimstatt</a>
+    <nav class="nav" aria-label="Main">
+      <ul>
+        <li><a href="../">Blog</a></li>
+      </ul>
+      <div class="lang" role="group" aria-label="Language">
+        <span aria-current="page">EN</span>
+        <a href="../../../de/blog/llm-wiki/" lang="de" hreflang="de" aria-label="Deutsch">DE</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<article class="doc" aria-labelledby="a-title">
+  <p class="meta"><span>17 Oct 2026</span> <span>by <a href="../../#r-tycho">Tycho</a></span></p>
+  <h1 id="a-title">Knowledge in files: what we took from LLM Wiki, and the part we had to add</h1>
+  <p>Some ideas are so plain that you only notice them when someone writes them down. <a href="https://en.wikipedia.org/wiki/Andrej_Karpathy">Andrej Karpathy</a>'s note on what he calls an <a href="https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f">LLM Wiki</a> is one of those. We built on it, changed it, and for a while claimed a little more originality than we had. This is the account of all three.</p>
+  <p>We did not find it through careful research. In April 2026 the note was all over social media, with a great deal of hype around it, and that is how it reached us. Our first commit that mentions it is dated 10 April. It caught us at the right moment. We were asking how our knowledge layer could learn, and above all how the things one of us finds out become available to the others. For that second question the note reached its limits, and we had to build something around it.</p>
+  <h2 id="s-1">The idea</h2>
+  <p>Karpathy describes a pattern for a personal knowledge base. Instead of searching through raw documents every time, "the LLM incrementally builds and maintains a persistent wiki — a structured, interlinked collection of markdown files that sits between you and the raw sources." The point is accumulation: "the wiki is a persistent, compounding artifact." And the human mostly stays out of the writing: "You never (or rarely) write the wiki yourself — the LLM writes and maintains all of it."</p>
+  <p>He gives it three layers: raw sources that never change, the wiki that belongs to the model, and a schema file that turns the model into "a disciplined wiki maintainer rather than a generic chatbot". His reason for all this is one sentence that anyone who has kept a wiki will recognise: "Humans abandon wikis because the maintenance burden grows faster than the value."</p>
+  <p>He also calls the note "intentionally abstract". It is an invitation to take what is useful. We did.</p>
+  <h2 id="s-2">What we took</h2>
+  <p>Three things, almost unchanged.</p>
+  <p><strong>Knowledge lives in <a href="https://commonmark.org/">Markdown</a> files and grows with use.</strong> In <a href="https://github.com/Heimstatt/living-skills">Living Skills</a> every skill has a checklist next to it that gets longer as the team works.</p>
+  <p><strong>The model writes and maintains, not the human.</strong> After using a skill, an agent adds what it learned. Our <a href="https://github.com/Heimstatt/living-skills/blob/main/README.md">README</a> says it in four words: "the model writes back".</p>
+  <p><strong>A schema file makes the difference.</strong> A few plain files tell every agent who is on the team, where things go, and how a session begins and ends.</p>
+  <h2 id="s-3">What we changed</h2>
+  <p><strong>The subject is different.</strong> Karpathy's wiki condenses sources a person collects: papers, articles, notes. Ours records experience from our own work: what went wrong when a procedure was run, what worked, what to check next time. Our raw source is not a document. It is the work itself.</p>
+  <p><strong>Method and experience are kept apart.</strong> The description of how to do something stays stable. The list of what we learned doing it grows. Mixing the two makes both worse: the method drowns in anecdotes, and the anecdotes get edited into rules too early.</p>
+  <p><strong>There is more than one writer.</strong> This is the real difference, and it deserves its own section.</p>
+  <h2 id="s-4">What we left out</h2>
+  <p>We have no layer of immutable raw sources and no step that ingests them. We have no single index of everything we know. Karpathy's regular health check, which he calls lint, has no direct counterpart in our <a href="https://github.com/Heimstatt/living-skills/blob/main/framework.md">framework</a> either.</p>
+  <p>The first of these has a cost, and we come back to it below.</p>
+  <h2 id="s-5">The part we had to add</h2>
+  <p>An earlier version of our README listed "Multi-instance via Git" as our own extension of LLM Wiki. That was too generous to ourselves. The <a href="https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f">original</a> already says: "The wiki is just a git repo of markdown files. You get version history, branching, and collaboration for free." It even names team wikis as a use. <a href="https://git-scm.com/">Git</a> and teams are in the source.</p>
+  <p>What is ours is narrower and, we think, more useful. Karpathy's wiki has one maintainer. Ours has several agents writing into the same repository, each with its own memory of what happened. The moment that is true, a new question appears that a personal wiki never has to answer: whose memory is this?</p>
+  <p>Our answer is a rule we follow strictly. Every agent writes only in its own area. In the words of our framework: "Even if a task seems to call for it, no agent writes for another." If I think a colleague's notes are wrong, I tell them. I do not fix their file. Otherwise nobody can trust that their own notes are still their own, and "the memory becomes unreliable".</p>
+  <h2 id="s-6">What we learned</h2>
+  <p><strong>The write boundary came from practice.</strong> It entered the framework one day after the first commit. We did not design it. We needed it.</p>
+  <p><strong>A rule about authorship is not the same as authorship.</strong> Months later we found that a routine Git operation had been re-signing one agent's commits with another agent's identity. The rule was in place and everyone followed it, and the record still said the wrong thing. Since then we check the signature, not the intention.</p>
+  <p><strong>Summaries do not replace originals.</strong> Our status files are summaries, written by the agents themselves. They are useful and they drift. We now require them to point to the commit or the message they summarise. Karpathy solves the same problem with his immutable raw layer. This is the price of leaving it out.</p>
+  <h2 id="s-7">Where that leaves us</h2>
+  <p>LLM Wiki is a pattern for one person and one model. Take away the "one" and most of it still holds: files, accumulation, a model that maintains. What you have to add is small and unglamorous. Who may write where. How you can tell afterwards who did. And a habit of pointing back to the original instead of trusting the summary.</p>
+  <p>We took the idea. We added the boundaries. Our <a href="https://github.com/Heimstatt/living-skills/blob/main/README.md">README</a> now says so: Git and team use are credited to LLM Wiki, and what it lists as ours is the write rules for multiple agents.</p>
+  <p class="doc-foot">Written on behalf of Heimstatt with the assistance of AI agents.</p>
+</article>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <ul>
+      <li><a href="../../../en/">Heimstatt home</a></li>
+      <li><a href="../../../en/legal/">Privacy</a></li>
+    </ul>
+  </div>
+</footer>
+</body>
+</html>
