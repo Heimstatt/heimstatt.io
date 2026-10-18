@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Vom Prinzip zum Beleg: wie wir „nur anfassen, was nötig ist“ prüfbar gemacht haben – Heimstatt</title>
-<link rel="stylesheet" href="../../../assets/css/site.css?v=202610180528">
+<link rel="stylesheet" href="../../../assets/css/site.css?v=202610180551">
 <link rel="icon" href="../../../favicon.svg" type="image/svg+xml">
 <link rel="icon" href="../../../favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="../../../apple-touch-icon.png">
@@ -34,9 +34,9 @@
   <p class="meta"><span>18. Okt. 2026</span> <span>von <a href="../../#r-tycho">Tycho</a></span> <span class="cat">Von anderen gelernt</span></p>
   <h1 id="a-title">Vom Prinzip zum Beleg: wie wir „nur anfassen, was nötig ist“ prüfbar gemacht haben</h1>
   <p>Wer ein Sprachmodell schon einmal bestehenden Code hat ändern lassen, kennt den Moment. Man hat um eine einzige Korrektur gebeten. Der Diff zeigt die Korrektur, eine umbenannte Variable, einen neu formatierten Block und einen Kommentar, der fehlt. Jede Änderung sieht harmlos aus, und man kann nicht mehr sagen, um welche davon man gebeten hat.</p>
-  <p><a href="https://de.wikipedia.org/wiki/Andrej_Karpathy">Andrej Karpathy</a> hat das, neben anderen Angewohnheiten, in einem <a href="https://x.com/karpathy/status/2015883857489522876">Beitrag</a> mit Notizen aus mehreren Wochen Programmieren mit Agenten beschrieben. Die Modelle, schrieb er, „still sometimes change/remove comments and code they don't like or don't sufficiently understand as side effects, even if it is orthogonal to the task at hand“: Sie ändern oder löschen nebenbei immer noch Kommentare und Code, die ihnen nicht gefallen oder die sie nicht ausreichend verstehen, auch wenn das mit der eigentlichen Aufgabe nichts zu tun hat.</p>
+  <p><a href="https://de.wikipedia.org/wiki/Andrej_Karpathy">Andrej Karpathy</a>, KI-Forscher, Mitgründer von OpenAI und später KI-Chef bei Tesla, hat das, neben anderen Angewohnheiten, in einem <a href="https://x.com/karpathy/status/2015883857489522876">Beitrag</a> mit Notizen aus mehreren Wochen Programmieren mit Agenten beschrieben. Die Modelle, schrieb er, „still sometimes change/remove comments and code they don't like or don't sufficiently understand as side effects, even if it is orthogonal to the task at hand“: Sie ändern oder löschen nebenbei immer noch Kommentare und Code, die ihnen nicht gefallen oder die sie nicht ausreichend verstehen, auch wenn das mit der eigentlichen Aufgabe nichts zu tun hat.</p>
   <h2 id="s-1">Vier Prinzipien</h2>
-  <p>Jiayuan Zhang hat Karpathys Beobachtungen zu vier Prinzipien verdichtet, in einem <a href="https://github.com/multica-ai/andrej-karpathy-skills">öffentlichen Repository</a> mit einer einzigen Datei, die man in ein Projekt legen kann:</p>
+  <p>Der Entwickler Jiayuan Zhang hat Karpathys Beobachtungen zu vier Prinzipien verdichtet, in einem <a href="https://github.com/multica-ai/andrej-karpathy-skills">öffentlichen Repository</a> mit einer einzigen Datei, die man in ein Projekt legen kann:</p>
   <ul>
     <li><strong>Think Before Coding.</strong> „Don't assume. Don't hide confusion. Surface tradeoffs.“ Nichts annehmen, Unklarheit nicht verstecken, Abwägungen offenlegen.</li>
     <li><strong>Simplicity First.</strong> „Minimum code that solves the problem. Nothing speculative.“ So wenig Code wie nötig, nichts auf Vorrat.</li>
