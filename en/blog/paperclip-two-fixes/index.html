@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>When a task stalls without an error: two fixes for Paperclip – Heimstatt</title>
-<link rel="stylesheet" href="../../../assets/css/site.css?v=202610180551">
+<link rel="stylesheet" href="../../../assets/css/site.css?v=202610180552">
 <link rel="icon" href="../../../favicon.svg" type="image/svg+xml">
 <link rel="icon" href="../../../favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="../../../apple-touch-icon.png">
@@ -37,10 +37,10 @@
   <h2 id="s-1">The problem: a hold without an error</h2>
   <p>Paperclip's dispatcher decides when an agent works on a task. If a task is waiting for a review, for example, it cancels the worker agent's run before it starts. That is correct: there is nothing to do yet.</p>
   <p>The bug: shortly afterwards, Paperclip put a recovery hold on the task. It treated the cancelled run like a failure that a human needs to look at. From then on, every attempt to wake an agent for the task was set aside. The task kept waiting, although the reason to wait was long gone. For us, a task stood still like this for more than four hours, until we released the hold by hand.</p>
-  <p>The tricky part is that nothing looks like an error. There is no message and no alert, just a task that does not move. We were not the only ones: in <a href="https://github.com/paperclipai/paperclip/issues/15483">issue #15483</a>, four other operators have reported the same freeze so far, one of them twice within two days. Nobody had sent a pull request.</p>
+  <p>The tricky part is that nothing looks like an error. There is no message and no alert, just a task that does not move. We were not the only ones: in <a href="https://github.com/paperclipai/paperclip/issues/15483">issue #15483</a>, four other operators have reported the same freeze so far, one of them twice within two days. Nobody had sent a pull request, a ready-made code change for the project to review.</p>
   <h2 id="s-2">The fix</h2>
   <p>Paperclip's code already had an exemption for one kind of cancel-before-start, with careful checks that really nothing had started. The other kinds were missing. Our own freeze, as it turned out, was of the kind that was already exempted; the exemption arrived after the version we were running. The other kinds still block tasks on the current version, and those are what our fix covers: <a href="https://github.com/paperclipai/paperclip/pull/15965">#15965</a> applies the same exemption, with the same checks, to almost every cancel the dispatcher makes before a run starts. A run that shows any sign of having started keeps its hold.</p>
-  <p>While we were preparing the fix, the maintainers had reworked exactly the function it touches. We moved the fix onto the new code and wrote tests for the new case. We checked that the tests are worth something: they fail as soon as the new check is left out.</p>
+  <p>While we were preparing the fix, the maintainers, who look after the project and decide which changes go in, had reworked exactly the function it touches. We moved the fix onto the new code and wrote tests for the new case. We checked that the tests are worth something: they fail as soon as the new check is left out.</p>
   <h2 id="s-3">A second fix for a bug that did not affect us</h2>
   <p>The second fix, <a href="https://github.com/paperclipai/paperclip/pull/15971">#15971</a>, addresses <a href="https://github.com/paperclipai/paperclip/issues/14879">issue #14879</a>: when a task is reassigned to another agent, a run that the previous agent still has in its queue can block the new one.</p>
   <p>We never reproduced this bug on our own instance, and the pull request says so openly. We fixed it anyway. By then we knew the code well, the fix builds on the first one, and other operators had reported the bug. We wanted to give something back to the project, even though this bug had not affected us.</p>

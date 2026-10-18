@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Wenn eine Aufgabe ohne Fehlermeldung stillsteht: zwei Fixes für Paperclip – Heimstatt</title>
-<link rel="stylesheet" href="../../../assets/css/site.css?v=202610180551">
+<link rel="stylesheet" href="../../../assets/css/site.css?v=202610180552">
 <link rel="icon" href="../../../favicon.svg" type="image/svg+xml">
 <link rel="icon" href="../../../favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="../../../apple-touch-icon.png">
@@ -37,10 +37,10 @@
   <h2 id="s-1">Das Problem: eine Sperre ohne Fehler</h2>
   <p>Paperclips Dispatcher entscheidet, wann ein Agent an einer Aufgabe arbeitet. Wartet eine Aufgabe zum Beispiel auf ein Review, bricht er den Lauf des Worker-Agenten ab, bevor dieser beginnt. Das ist richtig so: Es gibt noch nichts zu tun.</p>
   <p>Der Fehler: Kurz darauf setzte Paperclip eine Wiederherstellungssperre auf die Aufgabe. Den abgebrochenen Lauf behandelte es wie einen Fehlschlag, den sich ein Mensch ansehen muss. Ab da wurde jeder Versuch, einen Agenten für diese Aufgabe zu wecken, zurückgestellt. Die Aufgabe wartete weiter, obwohl der Grund zum Warten längst weg war. Bei uns stand eine Aufgabe so mehr als vier Stunden still, bis wir die Sperre von Hand lösten.</p>
-  <p>Tückisch daran ist, dass nichts nach Fehler aussieht. Es gibt keine Meldung und keinen Alarm, nur eine Aufgabe, die sich nicht bewegt. Wir waren nicht die Einzigen: Im <a href="https://github.com/paperclipai/paperclip/issues/15483">Issue #15483</a> haben bis heute vier weitere Betreiber denselben Stillstand gemeldet, einer davon zweimal innerhalb von zwei Tagen. Einen Pull Request gab es noch nicht.</p>
+  <p>Tückisch daran ist, dass nichts nach Fehler aussieht. Es gibt keine Meldung und keinen Alarm, nur eine Aufgabe, die sich nicht bewegt. Wir waren nicht die Einzigen: Im <a href="https://github.com/paperclipai/paperclip/issues/15483">Issue #15483</a> haben bis heute vier weitere Betreiber denselben Stillstand gemeldet, einer davon zweimal innerhalb von zwei Tagen. Einen Pull Request, also einen fertigen Änderungsvorschlag am Code, gab es noch nicht.</p>
   <h2 id="s-2">Die Lösung</h2>
   <p>Paperclips Code hatte für eine Art von Abbruch vor dem Start schon eine Ausnahme, mit sorgfältigen Prüfungen, dass wirklich nichts begonnen hatte. Für die anderen Arten fehlte sie. Unser eigener Stillstand gehörte übrigens zu der Art, die schon ausgenommen war; die Ausnahme kam erst nach dem Stand, den wir betrieben. Die anderen Arten blockieren Aufgaben auch auf dem aktuellen Stand, und genau die deckt unser Fix ab: <a href="https://github.com/paperclipai/paperclip/pull/15965">#15965</a> wendet dieselbe Ausnahme mit denselben Prüfungen auf fast jeden Abbruch an, den der Dispatcher vor dem Start eines Laufs macht. Ein Lauf, der irgendein Zeichen zeigt, dass er begonnen hat, behält seine Sperre.</p>
-  <p>Während wir den Fix vorbereiteten, hatten die Maintainer genau die Funktion umgebaut, die er berührt. Wir haben ihn auf den neuen Stand gesetzt und Tests für den neuen Fall geschrieben. Dass die Tests etwas taugen, haben wir geprüft: Sie schlagen fehl, sobald man die neue Prüfung weglässt.</p>
+  <p>Während wir den Fix vorbereiteten, hatten die Maintainer, die das Projekt betreuen und über Änderungen entscheiden, genau die Funktion umgebaut, die er berührt. Wir haben ihn auf den neuen Stand gesetzt und Tests für den neuen Fall geschrieben. Dass die Tests etwas taugen, haben wir geprüft: Sie schlagen fehl, sobald man die neue Prüfung weglässt.</p>
   <h2 id="s-3">Ein zweiter Fix, der uns nicht betraf</h2>
   <p>Der zweite Fix, <a href="https://github.com/paperclipai/paperclip/pull/15971">#15971</a>, behebt <a href="https://github.com/paperclipai/paperclip/issues/14879">Issue #14879</a>: Wird eine Aufgabe einem anderen Agenten zugewiesen, kann ein Lauf, den der vorige Agent noch in der Warteschlange hat, den neuen blockieren.</p>
   <p>Auf unserer eigenen Instanz haben wir diesen Fehler nie nachgestellt, und der Pull Request sagt das offen. Wir haben ihn trotzdem behoben. Wir kannten den Code inzwischen gut, der Fix baut auf dem ersten auf, und andere Betreiber hatten den Fehler gemeldet. Wir wollten etwas an das Projekt zurückgeben, auch wenn uns dieser Fehler nicht betroffen hatte.</p>
