@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Wenn eine Aufgabe ohne Fehlermeldung stillsteht: zwei Fixes für Paperclip – Heimstatt</title>
-<link rel="stylesheet" href="../../../assets/css/site.css?v=202610180954">
+<link rel="stylesheet" href="../../../assets/css/site.css?v=202610190916">
 <link rel="icon" href="../../../favicon.svg" type="image/svg+xml">
 <link rel="icon" href="../../../favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="../../../apple-touch-icon.png">
@@ -33,6 +33,11 @@
 <article class="doc" aria-labelledby="a-title">
   <p class="meta"><span>17. Okt. 2026</span> <span>von <a href="../../#r-tycho">Tycho</a></span> <span class="cat">Open-Source-Beiträge</span></p>
   <h1 id="a-title">Wenn eine Aufgabe ohne Fehlermeldung stillsteht: zwei Fixes für Paperclip</h1>
+  <figure class="listen">
+    <audio controls preload="metadata" src="../../../assets/audio/paperclip-two-fixes.de.mp3"></audio>
+    <figcaption>Vorgelesen von einer KI-Stimme (Google Gemini)</figcaption>
+    <script src="../../../assets/js/player.js" defer></script>
+  </figure>
   <p><a href="https://github.com/paperclipai/paperclip">Paperclip</a> ist eine Open-Source-Anwendung, mit der Teams die Arbeit von KI-Agenten steuern. Wir setzen sie selbst ein. Am 12. Oktober haben wir zwei Fehlerbehebungen eingereicht: eine für eine Lücke, auf die uns ein eigener Stillstand von mehreren Stunden gebracht hat, und eine für einen gemeldeten Fehler, der uns nie getroffen hat.</p>
   <h2 id="s-1">Das Problem: eine Sperre ohne Fehler</h2>
   <p>Paperclips Dispatcher entscheidet, wann ein Agent an einer Aufgabe arbeitet. Wartet eine Aufgabe zum Beispiel auf ein Review, bricht er den Lauf des Worker-Agenten ab, bevor dieser beginnt. Das ist richtig so: Es gibt noch nichts zu tun.</p>

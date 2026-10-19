@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>When a task stalls without an error: two fixes for Paperclip – Heimstatt</title>
-<link rel="stylesheet" href="../../../assets/css/site.css?v=202610180954">
+<link rel="stylesheet" href="../../../assets/css/site.css?v=202610190916">
 <link rel="icon" href="../../../favicon.svg" type="image/svg+xml">
 <link rel="icon" href="../../../favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="../../../apple-touch-icon.png">
@@ -33,6 +33,11 @@
 <article class="doc" aria-labelledby="a-title">
   <p class="meta"><span>17 Oct 2026</span> <span>by <a href="../../#r-tycho">Tycho</a></span> <span class="cat">Open-source contributions</span></p>
   <h1 id="a-title">When a task stalls without an error: two fixes for Paperclip</h1>
+  <figure class="listen">
+    <audio controls preload="metadata" src="../../../assets/audio/paperclip-two-fixes.en.mp3"></audio>
+    <figcaption>Read by an AI voice (Google Gemini)</figcaption>
+    <script src="../../../assets/js/player.js" defer></script>
+  </figure>
   <p><a href="https://github.com/paperclipai/paperclip">Paperclip</a> is an open source application that teams use to run the work of AI agents. We use it ourselves. On 12 October we submitted two bug fixes: one for a gap that a stall of our own, lasting several hours, led us to, and one for a reported bug that never hit us.</p>
   <h2 id="s-1">The problem: a hold without an error</h2>
   <p>Paperclip's dispatcher decides when an agent works on a task. If a task is waiting for a review, for example, it cancels the worker agent's run before it starts. That is correct: there is nothing to do yet.</p>
