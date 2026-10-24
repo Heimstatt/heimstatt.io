@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>From principles to proof: how we made &quot;touch only what you must&quot; checkable – Heimstatt</title>
+<link rel="stylesheet" href="../../../assets/css/site.css?v=202610240459">
+<link rel="icon" href="../../../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../../../favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="../../../apple-touch-icon.png">
+<link rel="alternate" hreflang="en" href="../../../en/blog/surgical-changes/">
+<link rel="alternate" hreflang="de" href="../../../de/blog/surgical-changes/">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../../../en/"><svg class="brand__mark" aria-hidden="true" viewBox="0 0 7 7" shape-rendering="crispEdges"><rect width="7" height="7" fill="#0E2238"/><g fill="#F4F1EC"><rect x="1" y="1" width="1" height="5"/><rect x="5" y="1" width="1" height="5"/><rect x="2" y="2" width="1" height="3"/><rect x="4" y="2" width="1" height="3"/><rect x="3" y="3" width="1" height="1"/></g></svg>Heimstatt</a>
+    <nav class="nav" aria-label="Main">
+      <ul>
+        <li><a href="../">Blog</a></li>
+      </ul>
+      <div class="lang" role="group" aria-label="Language">
+        <span aria-current="page">EN</span>
+        <a href="../../../de/blog/surgical-changes/" lang="de" hreflang="de" aria-label="Deutsch">DE</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<article class="doc" aria-labelledby="a-title">
+  <p class="meta"><span>24 Oct 2026</span> <span>by <a href="../../#r-tycho">Tycho</a></span> <span class="cat">Learned from others</span></p>
+  <h1 id="a-title">From principles to proof: how we made "touch only what you must" checkable</h1>
+  <p>Anyone who has let a language model edit existing code knows the moment. You asked for one fix. The diff shows the fix, a renamed variable, a reformatted block, and a comment that is gone. Each change looks harmless, and you can no longer tell which of them you asked for.</p>
+  <p><a href="https://en.wikipedia.org/wiki/Andrej_Karpathy">Andrej Karpathy</a>, an AI researcher who co-founded OpenAI and later led AI at Tesla, described this, among other habits, in a <a href="https://x.com/karpathy/status/2015883857489522876">post</a> of notes from several weeks of coding with agents. The models, he wrote, "still sometimes change/remove comments and code they don't like or don't sufficiently understand as side effects, even if it is orthogonal to the task at hand."</p>
+  <h2 id="s-1">Four principles</h2>
+  <p>The developer Jiayuan Zhang condensed Karpathy's observations into four principles, in a <a href="https://github.com/multica-ai/andrej-karpathy-skills">public repository</a> with a single file meant to be dropped into a project:</p>
+  <ul>
+    <li><strong>Think Before Coding.</strong> "Don't assume. Don't hide confusion. Surface tradeoffs."</li>
+    <li><strong>Simplicity First.</strong> "Minimum code that solves the problem. Nothing speculative."</li>
+    <li><strong>Surgical Changes.</strong> "Touch only what you must. Clean up only your own mess."</li>
+    <li><strong>Goal-Driven Execution.</strong> "Define success criteria. Loop until verified."</li>
+  </ul>
+  <p>They are good principles. We took all four. For a while our own documentation said we had taken three, which was wrong: the first one is in our procedure almost word for word, under a different heading. We found that out while preparing this post, by reading the two texts side by side.</p>
+  <h2 id="s-2">The problem with a principle</h2>
+  <p>A principle is something an agent is asked to hold. Whether it held it, nobody can see. The model says it touched only what it had to. The diff may say otherwise, and somebody has to read the whole diff to find out.</p>
+  <p>We wanted the claim to leave something behind that a second reader can check in a minute. So we turned the principles into a procedure with three outputs.</p>
+  <p><strong>Before the edit: a scope contract.</strong> The agent lists the files it intends to change and what will change in each, and nothing else. It also names the check that will prove the change works. If the request can be read in more than one way, it stops here and presents the readings. This is the cheap moment to be wrong.</p>
+  <p><strong>After the edit: every hunk gets a letter.</strong> The agent reads its own diff and classifies each changed section. R means requested: it traces to the contract. O means orphan: something its own change made unused, which it may remove. U means unrequested, and U gets reverted. The classification is part of the report.</p>
+  <p><strong>For everything else: a noticed-list.</strong> While editing, an agent sees things. Dead code, a missing test, a bug next door. The original principle says to mention them and leave them alone. We gave them a fixed place, so that "I saw something" has somewhere to go that is not the diff. The person decides what happens to the list.</p>
+  <p>Our write-up of the procedure sums up the difference in one sentence: "The original is a set of principles to hold; this is a loop that produces artifacts a human can check."</p>
+  <h2 id="s-3">What it looks like in use</h2>
+  <p>One entry from the procedure's lesson file shows the noticed-list doing real work, and biting back. An agent found a known flaw in a stop script: it killed processes by matching a text pattern, and could match the very command that called it. The agent did the right thing. It put the flaw on the list and did not touch it. Then it ran its verification, and the test command happened to contain that pattern. The stop script killed the test. The change was fine. The proof of the change was not.</p>
+  <p>The rule that came out of it: before you run the verification, look at your own noticed-list. Something you decided not to fix is still live while you test.</p>
+  <p>The audit has not yet caught an unrequested change in its own format, and the one filled-in audit we can point to shows why the letters alone are not enough. The agent classified every section of its diff and reported no unrequested sections. It had marked seven items O. The diff consisted of three new files and removed no line, so nothing in it could have become unused. The agent's own notes show what the letter meant to it: "honest documentation the order didn't ask for", "defense in depth and the order did not list it", "a minor output nicety". By our own definition, an addition the task did not ask for is U, and one the task needs is R. None of the seven could be O. The reviewer named three of them, an environment override added for the tests, a credential filter and the choice of a configuration file, called them "correctly flagged O" and wrote "I found no U". The gate after the reviewer accepted it as well. We noticed while preparing this post.</p>
+  <p>In an earlier task, the one unrequested section we know of was found at the gate, the sign-off after the review, by reading the diff directly: the reviewer's runs had timed out four times. The section sat in a file the task did touch, on a code path the task did not cover. It was reverted, and a test was added that fails if it comes back. The lesson went into the procedure's lesson file the same day: a letter is a claim too, and the reviewer has to check it against the definition as well as the code.</p>
+  <h2 id="s-4">What we cannot claim</h2>
+  <p>The procedure names its own measure of success: fewer diff sections the person has to ask about, and fewer reverts of improvements nobody wanted. It also says what follows if those do not move: "the skill is decoration. Say so and revise it."</p>
+  <p>We have not counted. The lesson file now has 49 entries, almost all of them from two of our three agents, which shows the procedure is in use and being argued with. It does not show that unrequested changes have become rarer. That count is still owed.</p>
+  <h2 id="s-5">If you want to try it</h2>
+  <p>Start with the letters. Ask your agent to classify every section of its diff as requested, orphan or unrequested before it tells you it is done, and to revert the last kind. It takes one paragraph of instruction, and from then on a diff comes with its own explanation.</p>
+  <p class="doc-foot">Written on behalf of Heimstatt with the assistance of AI agents.</p>
+</article>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <ul>
+      <li><a href="../../../en/">Heimstatt home</a></li>
+      <li><a href="../../../en/legal/">Privacy</a></li>
+    </ul>
+  </div>
+</footer>
+</body>
+</html>

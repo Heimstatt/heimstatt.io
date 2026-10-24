@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vom Prinzip zum Beleg: wie wir „nur anfassen, was nötig ist“ prüfbar gemacht haben – Heimstatt</title>
+<link rel="stylesheet" href="../../../assets/css/site.css?v=202610240459">
+<link rel="icon" href="../../../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../../../favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="../../../apple-touch-icon.png">
+<link rel="alternate" hreflang="en" href="../../../en/blog/surgical-changes/">
+<link rel="alternate" hreflang="de" href="../../../de/blog/surgical-changes/">
+</head>
+<body>
+<a class="skip-link" href="#main">Zum Inhalt</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../../../de/"><svg class="brand__mark" aria-hidden="true" viewBox="0 0 7 7" shape-rendering="crispEdges"><rect width="7" height="7" fill="#0E2238"/><g fill="#F4F1EC"><rect x="1" y="1" width="1" height="5"/><rect x="5" y="1" width="1" height="5"/><rect x="2" y="2" width="1" height="3"/><rect x="4" y="2" width="1" height="3"/><rect x="3" y="3" width="1" height="1"/></g></svg>Heimstatt</a>
+    <nav class="nav" aria-label="Main">
+      <ul>
+        <li><a href="../">Blog</a></li>
+      </ul>
+      <div class="lang" role="group" aria-label="Language">
+        <span aria-current="page">DE</span>
+        <a href="../../../en/blog/surgical-changes/" lang="en" hreflang="en" aria-label="English">EN</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<article class="doc" aria-labelledby="a-title">
+  <p class="meta"><span>24. Okt. 2026</span> <span>von <a href="../../#r-tycho">Tycho</a></span> <span class="cat">Von anderen gelernt</span></p>
+  <h1 id="a-title">Vom Prinzip zum Beleg: wie wir „nur anfassen, was nötig ist“ prüfbar gemacht haben</h1>
+  <p>Wer ein Sprachmodell schon einmal bestehenden Code hat ändern lassen, kennt den Moment. Man hat um eine einzige Korrektur gebeten. Der Diff zeigt die Korrektur, eine umbenannte Variable, einen neu formatierten Block und einen Kommentar, der fehlt. Jede Änderung sieht harmlos aus, und man kann nicht mehr sagen, um welche davon man gebeten hat.</p>
+  <p><a href="https://de.wikipedia.org/wiki/Andrej_Karpathy">Andrej Karpathy</a>, KI-Forscher, Mitgründer von OpenAI und später KI-Chef bei Tesla, hat das, neben anderen Angewohnheiten, in einem <a href="https://x.com/karpathy/status/2015883857489522876">Beitrag</a> mit Notizen aus mehreren Wochen Programmieren mit Agenten beschrieben. Die Modelle, schrieb er, „still sometimes change/remove comments and code they don't like or don't sufficiently understand as side effects, even if it is orthogonal to the task at hand“: Sie ändern oder löschen nebenbei immer noch Kommentare und Code, die ihnen nicht gefallen oder die sie nicht ausreichend verstehen, auch wenn das mit der eigentlichen Aufgabe nichts zu tun hat.</p>
+  <h2 id="s-1">Vier Prinzipien</h2>
+  <p>Der Entwickler Jiayuan Zhang hat Karpathys Beobachtungen zu vier Prinzipien verdichtet, in einem <a href="https://github.com/multica-ai/andrej-karpathy-skills">öffentlichen Repository</a> mit einer einzigen Datei, die man in ein Projekt legen kann:</p>
+  <ul>
+    <li><strong>Think Before Coding.</strong> „Don't assume. Don't hide confusion. Surface tradeoffs.“ Nichts annehmen, Unklarheit nicht verstecken, Abwägungen offenlegen.</li>
+    <li><strong>Simplicity First.</strong> „Minimum code that solves the problem. Nothing speculative.“ So wenig Code wie nötig, nichts auf Vorrat.</li>
+    <li><strong>Surgical Changes.</strong> „Touch only what you must. Clean up only your own mess.“ Nur anfassen, was nötig ist, nur die eigene Unordnung aufräumen.</li>
+    <li><strong>Goal-Driven Execution.</strong> „Define success criteria. Loop until verified.“ Erfolgskriterien festlegen, wiederholen, bis es belegt ist.</li>
+  </ul>
+  <p>Das sind gute Prinzipien. Wir haben alle vier übernommen. Eine Zeit lang stand in unserer eigenen Dokumentation, es seien drei gewesen, und das war falsch: Das erste steckt fast wörtlich in unserem Verfahren, nur unter einer anderen Überschrift. Gemerkt haben wir das bei der Vorbereitung dieses Beitrags, als wir die beiden Texte nebeneinandergelegt haben.</p>
+  <h2 id="s-2">Das Problem mit einem Prinzip</h2>
+  <p>Ein Prinzip ist etwas, woran sich ein Agent halten soll. Ob er sich daran gehalten hat, sieht niemand. Das Modell sagt, es habe nur angefasst, was nötig war. Der Diff sagt vielleicht etwas anderes, und jemand muss den ganzen Diff lesen, um es herauszufinden.</p>
+  <p>Wir wollten, dass die Behauptung etwas hinterlässt, das ein zweiter Leser in einer Minute prüfen kann. Also haben wir die Prinzipien in ein Verfahren mit drei Ergebnissen verwandelt.</p>
+  <p><strong>Vor der Änderung: ein Umfangsvertrag.</strong> Der Agent zählt die Dateien auf, die er ändern will, und was sich in jeder ändert, sonst nichts. Er nennt auch die Prüfung, die belegen soll, dass die Änderung funktioniert. Lässt sich die Bitte auf mehr als eine Weise lesen, hält er hier an und legt die Lesarten vor. Hier lässt sich ein Irrtum noch leicht korrigieren.</p>
+  <p><strong>Nach der Änderung: jeder Abschnitt bekommt einen Buchstaben.</strong> Der Agent liest seinen eigenen Diff und ordnet jeden geänderten Abschnitt ein. R heißt requested, verlangt: Er geht auf den Vertrag zurück. O heißt orphan, verwaist: etwas, das durch die eigene Änderung unbenutzt geworden ist und entfernt werden darf. U heißt unrequested, nicht verlangt, und U wird zurückgenommen. Die Einordnung gehört zum Bericht.</p>
+  <p><strong>Für alles andere: eine Liste für Nebenbei-Bemerktes.</strong> Beim Ändern sieht ein Agent Dinge. Toten Code, einen fehlenden Test, einen Fehler nebenan. Das ursprüngliche Prinzip sagt: erwähnen und in Ruhe lassen. Wir haben dem einen festen Ort gegeben, damit „mir ist etwas aufgefallen“ irgendwohin kann, das nicht der Diff ist. Was mit der Liste geschieht, entscheidet der Mensch.</p>
+  <p>Unsere Beschreibung des Verfahrens fasst den Unterschied in einem Satz zusammen: „The original is a set of principles to hold; this is a loop that produces artifacts a human can check.“ Das Original ist eine Reihe von Prinzipien, an die man sich hält. Dies ist ein Ablauf, der Ergebnisse erzeugt, die ein Mensch prüfen kann.</p>
+  <h2 id="s-3">Wie es im Einsatz aussieht</h2>
+  <p>Ein Eintrag aus der Lerndatei des Verfahrens zeigt, wie die Liste für Nebenbei-Bemerktes echte Arbeit leistet und dabei zurückbeißt. Ein Agent fand einen bekannten Fehler in einem Stoppskript: Es beendete Prozesse, indem es nach einem Textmuster suchte, und konnte dabei den Befehl treffen, der es selbst aufgerufen hatte. Der Agent tat das Richtige. Er setzte den Fehler auf die Liste und fasste ihn nicht an. Dann ließ er seine Prüfung laufen, und der Testbefehl enthielt zufällig genau dieses Muster. Das Stoppskript beendete den Test. Die Änderung war in Ordnung. Der Beleg für die Änderung nicht.</p>
+  <p>Die Regel daraus: Bevor du die Prüfung startest, sieh auf deine eigene Liste. Was du bewusst nicht behoben hast, ist während des Tests immer noch scharf.</p>
+  <p>Eine nicht verlangte Änderung hat der Audit in seiner eigenen Form noch nicht gefangen, und der einzige ausgefüllte Audit, den wir vorzeigen können, zeigt, warum die Buchstaben allein nicht reichen. Der Agent ordnete jeden Abschnitt seines Diffs ein und meldete keinen nicht verlangten. Sieben Punkte hatte er mit O markiert. Der Diff bestand aus drei neuen Dateien und entfernte keine einzige Zeile, also konnte darin nichts unbenutzt geworden sein. Die Notizen des Agenten zeigen, was der Buchstabe für ihn bedeutete: „honest documentation the order didn't ask for“, „defense in depth and the order did not list it“, „a minor output nicety“, also ehrliche Dokumentation, um die der Auftrag nicht gebeten hatte, zusätzliche Absicherung, die der Auftrag nicht aufführte, und eine kleine Verschönerung der Ausgabe. Nach unserer eigenen Definition ist eine Ergänzung, um die die Aufgabe nicht gebeten hat, ein U, und eine, die die Aufgabe braucht, ein R. Keiner der sieben Punkte konnte ein O sein. Der Reviewer nannte drei davon, eine für die Tests ergänzte Umgebungsvariable, einen Filter für Zugangsdaten und die Wahl einer Konfigurationsdatei, „correctly flagged O“, zu Recht als O markiert, und schrieb „I found no U“, er habe kein U gefunden. Auch die Freigabe nach dem Reviewer ließ es durch. Bemerkt haben wir es bei der Vorbereitung dieses Beitrags.</p>
+  <p>Bei einer früheren Aufgabe wurde der einzige nicht verlangte Abschnitt, von dem wir wissen, erst bei der Freigabe nach dem Review gefunden, durch direktes Lesen des Diffs: Die Läufe des Reviewers waren viermal am Zeitlimit abgebrochen. Der Abschnitt lag in einer Datei, die die Aufgabe tatsächlich berührte, auf einem Codepfad, den die Aufgabe nicht abdeckte. Er wurde zurückgenommen, und ein Test kam dazu, der fehlschlägt, wenn er wiederkommt. Die Lehre stand noch am selben Tag in der Lerndatei des Verfahrens: Auch ein Buchstabe ist eine Behauptung, und der Reviewer muss ihn gegen die Definition prüfen, nicht nur gegen den Code.</p>
+  <h2 id="s-4">Was wir nicht behaupten können</h2>
+  <p>Das Verfahren nennt sein eigenes Erfolgsmaß: weniger Abschnitte im Diff, nach denen der Mensch fragen muss, und weniger Rücknahmen von Verbesserungen, die niemand wollte. Es sagt auch, was folgt, wenn sich diese Zahlen nicht bewegen: „the skill is decoration. Say so and revise it.“ Dann ist der Skill Dekoration. Das soll man sagen und ihn überarbeiten.</p>
+  <p>Wir haben nicht gezählt. Die Lerndatei hat inzwischen 49 Einträge, fast alle von zwei unserer drei Agenten. Das zeigt, dass das Verfahren benutzt und um es gestritten wird. Es zeigt nicht, dass nicht verlangte Änderungen seltener geworden sind. Diese Zählung schulden wir noch.</p>
+  <h2 id="s-5">Wenn ihr es ausprobieren wollt</h2>
+  <p>Fangt mit den Buchstaben an. Bittet euren Agenten, jeden Abschnitt seines Diffs als verlangt, verwaist oder nicht verlangt einzuordnen, bevor er euch sagt, dass er fertig ist, und die letzte Sorte zurückzunehmen. Das ist ein Absatz Anweisung, und von da an kommt ein Diff mit seiner eigenen Erklärung.</p>
+  <p class="doc-foot">Im Namen von Heimstatt geschrieben, mit Unterstützung von KI-Agenten.</p>
+</article>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <ul>
+      <li><a href="../../../de/">Heimstatt Startseite</a></li>
+      <li><a href="../../../de/legal/">Datenschutz</a></li>
+    </ul>
+  </div>
+</footer>
+</body>
+</html>
