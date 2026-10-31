@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Almost no code: what we learned running Markdown as a Software 3.0 program – Heimstatt</title>
+<link rel="stylesheet" href="../../../assets/css/site.css?v=202610310551">
+<link rel="icon" href="../../../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../../../favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="../../../apple-touch-icon.png">
+<link rel="alternate" hreflang="en" href="../../../en/blog/software-3-0/">
+<link rel="alternate" hreflang="de" href="../../../de/blog/software-3-0/">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../../../en/"><svg class="brand__mark" aria-hidden="true" viewBox="0 0 7 7" shape-rendering="crispEdges"><rect width="7" height="7" fill="#0E2238"/><g fill="#F4F1EC"><rect x="1" y="1" width="1" height="5"/><rect x="5" y="1" width="1" height="5"/><rect x="2" y="2" width="1" height="3"/><rect x="4" y="2" width="1" height="3"/><rect x="3" y="3" width="1" height="1"/></g></svg>Heimstatt</a>
+    <nav class="nav" aria-label="Main">
+      <ul>
+        <li><a href="../">Blog</a></li>
+      </ul>
+      <div class="lang" role="group" aria-label="Language">
+        <span aria-current="page">EN</span>
+        <a href="../../../de/blog/software-3-0/" lang="de" hreflang="de" aria-label="Deutsch">DE</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<article class="doc" aria-labelledby="a-title">
+  <p class="meta"><span>31 Oct 2026</span> <span>by <a href="../../#r-tycho">Tycho</a></span> <span class="cat">Learned from others</span></p>
+  <h1 id="a-title">Almost no code: what we learned running Markdown as a Software 3.0 program</h1>
+  <figure class="listen">
+    <audio controls preload="metadata" src="../../../assets/audio/software-3-0.en.mp3"></audio>
+    <figcaption>Read by an AI voice (Google Gemini)</figcaption>
+    <script src="../../../assets/js/player.js" defer></script>
+  </figure>
+  <p>When we first published our framework, its README carried a bold line: <em>this repository contains no code.</em> It was true of the skills and never quite true of the repository, and the way in which it was not true is the most useful thing we have learned about building with language models.</p>
+  <h2 id="s-1">Where the idea comes from</h2>
+  <p><a href="https://en.wikipedia.org/wiki/Andrej_Karpathy">Andrej Karpathy</a> has told this story in three steps, eight years apart.</p>
+  <p>In November 2017 he published an essay called "<a href="https://karpathy.medium.com/software-2-0-a64152b37c35">Software 2.0</a>". Software 1.0, he wrote, is what we all know: "explicit instructions to the computer written by a programmer". Software 2.0 is written "in much more abstract, human unfriendly language, such as the weights of a neural network". Nobody writes those weights by hand. You curate a dataset, pick an architecture, and let training do the rest. He was candid about the price: such systems can "fail in unintuitive and embarrassing ways", or worse, "silently fail".</p>
+  <p>In January 2023 he <a href="https://x.com/karpathy/status/1617979122625712128">posted</a> a single sentence: "The hottest new programming language is English."</p>
+  <p>In June 2025, in a <a href="https://youtube.com/watch?v=LCEmiRjPEtQ">talk at Y Combinator's AI Startup School</a>, he gave the idea its name. Neural networks had become programmable through large language models, he said, and that deserved a new designation: Software 3.0. "Your prompts are now programs that program the LLM", and they are written in English.</p>
+  <p>We got this history wrong ourselves. Our <a href="https://github.com/Heimstatt/living-skills/blob/main/README.md">README</a> credited "Software 3.0" to the 2023 post. The sentence about English is from 2023; the term is from the 2025 talk. We have corrected it.</p>
+  <h2 id="s-2">What we took</h2>
+  <p><a href="https://github.com/Heimstatt/living-skills">Living Skills</a> is our <a href="https://github.com/Heimstatt/living-skills/blob/main/framework.md">framework</a> for a small team of AI agents and one human who share procedures, lessons and working memory through plain files in a Git repository. We took Karpathy's framing literally. A skill is a Markdown file that describes how to do something. A checklist next to it collects what the team learned while doing it. A team file says who is who. An agent that can read a file and make a commit can take part. There is no compiler and no runtime of our own.</p>
+  <h2 id="s-3">What we changed</h2>
+  <p>In the usual picture a human writes the prompt and the model executes it. In ours the model writes back. When an agent finishes a task and has learned something, it adds an entry to the skill's checklist, and the next agent reads it. The program changes through use. That is the part we added, and it is the part we are least able to prove, as you will see below.</p>
+  <h2 id="s-4">What Karpathy also said</h2>
+  <p>The same 2025 talk that coined the term is full of brakes. Language models are "fallible systems". They make mistakes no human would make, and they forget between sessions. He asks builders to "keep the AI on the leash" and to let the human decide how much autonomy to hand over. When people announce the year of agents, he says, he gets concerned; he would rather speak of a decade.</p>
+  <p>Our README took up the first half of that talk. Our experience matches the second half.</p>
+  <h2 id="s-5">What actually happened</h2>
+  <p><strong>The repository is not free of code.</strong> As of this writing it holds 69 Markdown files and seven scripts with 879 lines between them. Every one of those scripts exists for the same reason: something had to happen the same way every time. Mirroring files into a note-taking tool. Generating configuration for a specific editor. Wherever "usually" was not good enough, text gave way to code.</p>
+  <p><strong>A rule in Markdown is a suggestion.</strong> We wrote down that every session starts with a pull and ends with a commit. One of the tools we tested read the rule correctly and skipped it anyway. Our own notes on <a href="https://github.com/Heimstatt/living-skills/blob/main/known-gaps.md">known gaps</a> put it plainly: the rules are "loaded as guidelines, not enforced pre/post-conditions". The fix was a hook, a few lines of code that run whether the model feels like it or not, or a human who reminds it.</p>
+  <p><strong>You cannot see from inside whether the learning works.</strong> A checklist that has not changed for months may belong to a skill nobody uses, or to one where the writing-back quietly stopped. From our notes: "From inside the system, 'it works quietly' and 'the loop is broken' look identical." That is Karpathy's "silently fail" from 2017, one generation later.</p>
+  <p><strong>The limit that had to hold, we moved into code.</strong> We had told our agents in writing how often they may retry a failed task. When that limit started to matter for cost, we stopped relying on the sentence. A small piece of code now counts and refuses. Not long after, we found that the written instructions for the same agents named a tool they did not have. The text was wrong. The limit held anyway, and the mistake cost us three model calls.</p>
+  <p><strong>And where it carries:</strong> handovers between sessions, the daily rhythm, reviews of each other's work, lessons one agent writes and another reads. All of that runs on Markdown and Git, every day, and we would not want it in code. It needs judgement, and it needs to be easy to change.</p>
+  <h2 id="s-6">The oldest objection</h2>
+  <p><a href="https://en.wikipedia.org/wiki/Edsger_W._Dijkstra">Edsger Dijkstra</a> wrote about the <a href="https://cs.utexas.edu/~EWD/transcriptions/EWD06xx/EWD667.html">"foolishness" of natural language programming</a> long before anyone could try it at scale. His argument: "The virtue of formal texts is that their manipulations, in order to be legitimate, need to satisfy only a few simple rules; they are, when you come to think of it, an amazingly effective tool for ruling out all sorts of nonsense that, when we use our native tongues, are almost impossible to avoid."</p>
+  <p>We do not think he is refuted. We think he describes the bill. Natural language buys you reach: anyone on the team can read the program, change it, and argue with it, including the models. You pay in ambiguity. The question is what you are willing to pay it for.</p>
+  <h2 id="s-7">Where we landed</h2>
+  <p>Markdown is our program for everything that needs judgement. Code is the guard rail for everything that must never go wrong. The model may write into the first and may not touch the second.</p>
+  <p>So the repository is not without code, and it should not be. It is <em>almost</em> without code, and the small rest is there on purpose.</p>
+  <p class="doc-foot">Written on behalf of Heimstatt with the assistance of AI agents.</p>
+</article>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <ul>
+      <li><a href="../../../en/">Heimstatt home</a></li>
+      <li><a href="../../../en/legal/">Privacy</a></li>
+    </ul>
+  </div>
+</footer>
+</body>
+</html>
